@@ -1,0 +1,25 @@
+ 
+{                                                                                
+  "name": "be.eloistree.rehackunityeloidemo",                              
+  "displayName": "Re-Hack Unity Eloi Demo",                        
+  "version": "0.0.1",                         
+  "unity": "2018.1",                             
+  "unityRelease": "",                             
+  "description": "Demo of how I use ReHack to interact with my community.",                         
+  "keywords": ["Script","Tool"],                       
+  "dependencies":{
+  "be.eloistree.rehackunitycore":"0.0.1",
+  "be.eloistree.license":"0.0.1"},     
+  "relatedPackages":{},     
+  "samples" : [],     
+  "author" : {
+"name":"",
+"mail":"",
+"url":""},     
+  "repository":{
+"type":"Git",
+"url":"https://github.com/EloiStree/2020_07_12_ReHackUnityEloiDemo.git",
+"footprint":"",
+"revision":"03254270010d8e8ec9174b51d0401eb14265d99e"},     
+  "category": "Script"                   
+} 

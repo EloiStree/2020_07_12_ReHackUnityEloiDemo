@@ -1,0 +1,18 @@
+{
+    "name": "be.eloistree.ReHackUnityEloiDemoEditor",
+    "references": [
+        "be.eloistree.ReHackUnityCore",
+        "be.eloistree.ReHackUnityCoreEditor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
