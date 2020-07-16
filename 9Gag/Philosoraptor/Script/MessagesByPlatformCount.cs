@@ -6,13 +6,9 @@ using System;
 using UnityEngine.UI;
 
 public class MessagesByPlatformCount : MonoBehaviour {
+
+
     
-
-    void Start () {
-
-        Restream.Listener.AddNewMessageListener(CountPlatfomrInteraction);
-
-    }
 
     [System.Serializable]
     public class PlatformToCount
