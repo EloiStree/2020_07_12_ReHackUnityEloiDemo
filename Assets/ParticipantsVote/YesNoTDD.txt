@@ -1,0 +1,13 @@
+﻿Test
+Random sentence
+Random sentence
+Random sentence
+Random sentence
+!y 
+!Yes 
+!n 
+!no 
+!dc 
+!dontcare 
+!unvote 
+!uv 
