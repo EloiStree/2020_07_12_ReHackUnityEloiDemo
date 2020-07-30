@@ -25,7 +25,7 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
 
     private void RefreshUI(bool deleteAndAddPrefab)
     {
-        if(deleteAndAddPrefab)
+        if(deleteAndAddPrefab && m_whereToAdd)
             ClearAllPrefab();
        IEnumerable<ChatVote> votes =  m_poll.GetVotes();
         foreach (var item in votes)
@@ -123,6 +123,8 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
 
     public static Transform Clear( Transform transform)
     {
+        if (transform == null)
+            return null;
         foreach (Transform child in transform)
         {
             GameObject.Destroy(child.gameObject);
