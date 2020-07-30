@@ -5,19 +5,22 @@ using UnityEngine.UI;
 
 public class UI_ParticipantsVoteTextDisplay : MonoBehaviour
 {
-    public UI_ParticipantsVoteYesNoDontCare m_voteSource;
+    public ChatVotePoll m_voteSource;
     public Text m_participantsCount;
     public Text m_didNotVote;
     public Text m_yes;
     public Text m_no;
     public Text m_dontCare;
 
-  
+
+    public void SetWith(ChatVotePoll poll) {
+        m_voteSource = poll;
+    }
 
     public void Refresh() {
 
         int no, yes, dontcare, participantsCount, didNotVote;
-        m_voteSource.GetVoteState(out participantsCount, out yes,out no, out dontcare, out didNotVote);
+        m_voteSource.GetVotesState(out participantsCount, out didNotVote, out dontcare, out yes, out no);
 
         m_participantsCount.text = "" + participantsCount;
         m_didNotVote.text = "" + didNotVote;

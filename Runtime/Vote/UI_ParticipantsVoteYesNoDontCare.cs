@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -14,79 +15,86 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
     public InputField m_questionAsk;
 
     public List<UI_ParticipantVoteYesNo> m_currentlyAvailable = new List<UI_ParticipantVoteYesNo>();
-
     public UnityEvent m_voteDetected;
+    public ChatVotePoll m_poll;
+
+    public void SetPoll(ChatVotePoll poll) {
+        m_poll = poll;
+        RefreshUI(false);
+    }
+
+    private void RefreshUI(bool deleteAndAddPrefab)
+    {
+        if(deleteAndAddPrefab)
+            ClearAllPrefab();
+       IEnumerable<ChatVote> votes =  m_poll.GetVotes();
+        foreach (var item in votes)
+        {
+            SetOrAdd(item);
+        }
+        //for (int i = 0; i < m_currentlyAvailable.Count; i++)
+        //{
+        //    if(m_currentlyAvailable[i]!=null)
+        //        m_currentlyAvailable[i].Refresh();
+
+        //}
+    }
 
     public void ClearAllPrefab()
     {
         Clear(m_whereToAdd);
     }
 
-    internal void GetVoteState(out int participantsCount, out int yes, out int no, out int dontcare, out int didNotVote)
+    public void GetVoteState(out int participantsCount, out int yes, out int no, out int dontcare, out int didNotVote)
     {
-        participantsCount=no=yes=dontcare= didNotVote = 0;
-        for (int i = 0; i < m_currentlyAvailable.Count; i++)
-        {
-            if (m_currentlyAvailable[i] != null) {
-                participantsCount++;
-                if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.DontCare)
-                    dontcare++;
-                else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.No)
-                    no++;
-                else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.Yes)
-                    yes++;
-                else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.NotVoted)
-                    didNotVote++;
+        m_poll.GetVotesState(out participantsCount, out didNotVote, out  dontcare, out  yes, out  no);
+        //participantsCount=no=yes=dontcare= didNotVote = 0;
+        //for (int i = 0; i < m_currentlyAvailable.Count; i++)
+        //{
+        //    if (m_currentlyAvailable[i] != null) {
+        //        participantsCount++;
+        //        if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.DontCare)
+        //            dontcare++;
+        //        else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.No)
+        //            no++;
+        //        else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.Yes)
+        //            yes++;
+        //        else if (m_currentlyAvailable[i].m_voteChoosed == UI_ParticipantVoteYesNo.Vote.NotVoted)
+        //            didNotVote++;
 
-            }
+        //    }
 
-        }
+        //}
     }
 
     public void UnvoteForAll()
     {
-        for (int i = 0; i < m_currentlyAvailable.Count; i++)
-        {
-            if (m_currentlyAvailable[i] != null)
-                m_currentlyAvailable[i].SetVote(UI_ParticipantVoteYesNo.Vote.NotVoted);
-
-        }
+        m_poll.UnvoteAll();
+        RefreshUI(false);
+    }
+    public void RemoveAll()
+    {
+        m_poll.RemoveAll();
+        
+        RefreshUI(true);
     }
 
 
 
-    public void PushAsNotVotedMessage(RestreamChatMessage msg)
+    public void SetOrAdd(ChatVote vote)
     {
-        PushAsVoted(msg, UI_ParticipantVoteYesNo.Vote.NotVoted);
-
-    }
-    public void PushAsYesMessage(RestreamChatMessage msg)
-    {
-
-        PushAsVoted(msg, UI_ParticipantVoteYesNo.Vote.Yes);
-    }
-    public void PushAsNoMessage(RestreamChatMessage msg)
-    {
-        PushAsVoted(msg, UI_ParticipantVoteYesNo.Vote.No);
-
-    }
-    public void PushAsDontCareMessage(RestreamChatMessage msg)
-    {
-        PushAsVoted(msg, UI_ParticipantVoteYesNo.Vote.DontCare);
-    }
-    public void PushAsVoted(RestreamChatMessage msg, UI_ParticipantVoteYesNo.Vote vote)
-    {
-        UI_ParticipantVoteYesNo participant = GetParticipant(ref msg);
+        UserIdentifier userId = vote.GetUserInfo().UserID;
+        UI_ParticipantVoteYesNo participant = GetParticipant(ref userId);
         if (participant == null) {
-            participant= AddParticipant(msg);
+            participant= AddParticipant(vote.GetUserInfo());
         }
-         participant.SetVote(vote);
+         participant.SetChatVote(vote);
         m_voteDetected.Invoke();
 
     }
 
-    private UI_ParticipantVoteYesNo GetParticipant(ref RestreamChatMessage msg) { 
-        string id = msg.UserID.GetID();
+    private UI_ParticipantVoteYesNo GetParticipant(ref UserIdentifier user) { 
+        string id = user.GetID();
         for (int i = 0; i < m_currentlyAvailable.Count; i++)
         {
             if (m_currentlyAvailable[i]!=null
@@ -98,16 +106,14 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
         return null;
     }
 
-    private UI_ParticipantVoteYesNo AddParticipant(RestreamChatMessage msg)
+    private UI_ParticipantVoteYesNo AddParticipant(RestreamChatUser user)
     {
         GameObject created = Instantiate(m_prefab);
         created.transform.SetParent(m_whereToAdd);
         created.transform.localScale = Vector3.one;
         UI_ParticipantVoteYesNo participant = created.GetComponent<UI_ParticipantVoteYesNo>();
 
-        participant.SetVote(UI_ParticipantVoteYesNo.Vote.NotVoted);
-        participant.SetAssociatedID(msg.UserID.GetID());
-        participant.SetDisplayName(msg.UserName);
+        participant.SetChatVote(new ChatVote(user, ChatVoteType.NotVoted));
         m_currentlyAvailable.Add(participant);
 
 
@@ -123,21 +129,9 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
         }
         return transform;
     }
-
-    public string GetResumeOfTheVote() {
-        string result = "Question:" + m_questionAsk.text;
-        UI_ParticipantVoteYesNo p=null;
-        for (int i = 0; i < m_currentlyAvailable.Count; i++)
-        {
-            p = m_currentlyAvailable[i];
-
-            if (p!= null)
-                result += string.Format("\n{0}|{1}|{2}", p.m_participantId, p.m_participantName, p.m_voteChoosed);
-
-        }
-        return result;
+    public  void PushInClipboardAsMarkdown() {
+        UnityClipboard.Set(m_poll.SaveAsMD(m_questionAsk.text));
     }
-    public void PushResultInClipboard() {
-        UnityClipboard.Set(GetResumeOfTheVote());   
-    }
+
+   
 }
