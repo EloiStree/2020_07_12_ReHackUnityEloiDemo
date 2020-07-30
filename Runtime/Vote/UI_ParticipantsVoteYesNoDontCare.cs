@@ -20,10 +20,14 @@ public class UI_ParticipantsVoteYesNoDontCare : MonoBehaviour
 
     public void SetPoll(ChatVotePoll poll) {
         m_poll = poll;
+        m_voteDetected.Invoke();
         RefreshUI(false);
     }
 
-    private void RefreshUI(bool deleteAndAddPrefab)
+    public void RefreshUIWithoutFullReset() {
+        RefreshUI(false);
+    }
+    public void RefreshUI(bool deleteAndAddPrefab)
     {
         if(deleteAndAddPrefab && m_whereToAdd)
             ClearAllPrefab();

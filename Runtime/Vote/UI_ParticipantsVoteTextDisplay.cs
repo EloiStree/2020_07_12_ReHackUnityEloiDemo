@@ -15,6 +15,7 @@ public class UI_ParticipantsVoteTextDisplay : MonoBehaviour
 
     public void SetWith(ChatVotePoll poll) {
         m_voteSource = poll;
+        Refresh();
     }
 
     public void Refresh() {
